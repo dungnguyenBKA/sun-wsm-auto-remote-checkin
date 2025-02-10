@@ -23,11 +23,29 @@ function addCookies(current, addMore) {
     return Array.from(cookieMap.entries()).map(([key, value]) => `${key}=${value}`);
 }
 
-async function performCheckInFlow() {
-    const instance = axios.create({
-        baseURL: BASE_URL,
-    })
+const instance = axios.create({
+    baseURL: BASE_URL,
+    withCredentials: true,
+})
 
+// instance.interceptors.request.use((config) => {
+//     console.log("[Request] Header: ", config.headers)
+//     if(config.data) {
+//         console.log("[Request] Data: ", config.data)
+//     }
+//     return config;
+// }, (error) => {
+//     return error;
+// })
+//
+// instance.interceptors.response.use((config) => {
+//     console.log("[Response] Header: ", config.headers)
+//     return config;
+// }, (error) => {
+//     return error;
+// })
+
+async function performCheckInFlow() {
     let csrfToken = null;
     let cookies = [];
 
@@ -140,5 +158,8 @@ async function performCheckInFlow() {
 performCheckInFlow().then(() => {
     console.log(`Remote check in successfully for ${email}`);
 }).catch(error => {
-    console.error('Error during Check-in flow:', error);
+    console.error('Error during Check-in flow:')
+    if (error.message) {
+        console.error(error.message);
+    }
 })
