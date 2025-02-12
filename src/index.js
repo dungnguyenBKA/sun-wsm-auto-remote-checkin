@@ -110,7 +110,7 @@ async function performCheckInFlow() {
     }
 
     // Step 5: Perform remote Check-in
-    console.log('Step 5: Performing remote Check-in...');
+    console.log('Step 5: Performing remote Check-in & checkout...');
 
     const step5Data = qs.stringify({
         '_method': 'patch',
@@ -130,12 +130,36 @@ async function performCheckInFlow() {
                 'x-requested-with': 'XMLHttpRequest'
             }
         }
-    );
+    ).catch((error) => {
+        throw new Error(`Check-in failed ${error.message}`);
+    });
 
     if (response.status === 200 && response.data) {
         console.log('Check-in result:', response.data);
     } else {
         throw new Error('Check-in failed');
+    }
+
+    response = await instance.post(
+        `/vi/dashboard/checkout_remotes`,
+        step5Data,
+        {
+            headers: {
+                'accept': '*/*;q=0.5, text/javascript, application/javascript, application/ecmascript, application/x-ecmascript',
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'cookie': cookie,
+                'x-csrf-token': csrfToken2,
+                'x-requested-with': 'XMLHttpRequest'
+            }
+        }
+    ).catch((error) => {
+        throw new Error(`Check-out failed ${error.message}`);
+    });
+
+    if (response.status === 200 && response.data) {
+        console.log('Check-out result:', response.data);
+    } else {
+        throw new Error('Check-out failed');
     }
 }
 
