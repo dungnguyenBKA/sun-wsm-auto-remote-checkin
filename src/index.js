@@ -119,7 +119,7 @@ async function performCheckInFlow() {
     const cookie = cookies.join(';');
 
     response = await instance.post(
-        `/vi/dashboard/checkout_remotes`,
+        `/vi/dashboard/checkin_remotes`,
         step5Data,
         {
             headers: {
