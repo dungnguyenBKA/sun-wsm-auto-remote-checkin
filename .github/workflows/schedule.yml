@@ -1,0 +1,30 @@
+name: Scheduled Node.js Run
+
+on:
+  schedule:
+    # Lên lịch chạy lúc 8:00 và 17:00 (giờ UTC)
+    - cron: '0 1 * * *'
+    - cron: '0 10 * * *'
+
+jobs:
+  run-nodejs:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout mã nguồn từ repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Thiết lập Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20' # Thay bằng phiên bản Node.js của bạn
+
+      # Cài đặt dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Chạy dự án
+      - name: Run project
+        run: npm run start
