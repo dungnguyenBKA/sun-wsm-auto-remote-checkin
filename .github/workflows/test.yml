@@ -16,6 +16,14 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Run Tests with Secrets
+        env:
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+        run: |
+          echo "Using EMAIL=$EMAIL"
+          echo "Using PASSWORD=$PASSWORD"
+
       # Cài đặt dependencies
       - name: Install dependencies
         run: npm install
