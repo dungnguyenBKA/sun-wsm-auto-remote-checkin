@@ -28,23 +28,6 @@ const instance = axios.create({
     withCredentials: true,
 })
 
-// instance.interceptors.request.use((config) => {
-//     console.log("[Request] Header: ", config.headers)
-//     if(config.data) {
-//         console.log("[Request] Data: ", config.data)
-//     }
-//     return config;
-// }, (error) => {
-//     return error;
-// })
-//
-// instance.interceptors.response.use((config) => {
-//     console.log("[Response] Header: ", config.headers)
-//     return config;
-// }, (error) => {
-//     return error;
-// })
-
 async function performCheckInFlow() {
     let csrfToken = null;
     let cookies = [];
@@ -121,7 +104,7 @@ async function performCheckInFlow() {
         console.log('User timesheets dashboard loaded successfully');
         const $ = cheerio.load(response.data);
         csrfToken2 = $('meta[name="csrf-token"]').attr('content');
-        console.log({csrfToken2})
+        cookies = addCookies(cookies, response.headers["set-cookie"]);
     } else {
         throw new Error('Failed to load user timesheets dashboard');
     }
@@ -133,31 +116,31 @@ async function performCheckInFlow() {
         '_method': 'patch',
         'authenticity_token': csrfToken2,
     });
+    const cookie = cookies.join(';');
 
     response = await instance.post(
-        `/vi/dashboard/checkin_remotes`,
+        `/vi/dashboard/checkout_remotes`,
         step5Data,
         {
             headers: {
+                'accept': '*/*;q=0.5, text/javascript, application/javascript, application/ecmascript, application/x-ecmascript',
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'cookie': cookie,
                 'x-csrf-token': csrfToken2,
-                'x-requested-with': 'XMLHttpRequest',
-                'cookie': cookies.join(';')
+                'x-requested-with': 'XMLHttpRequest'
             }
         }
     );
 
     if (response.status === 200 && response.data) {
-        console.log('Check-in successful:', response.data);
+        console.log('Check-in result:', response.data);
     } else {
         throw new Error('Check-in failed');
     }
 }
 
 // Execute the Check-in flow
-performCheckInFlow().then(() => {
-    console.log(`Remote check in successfully for ${email}`);
-}).catch(error => {
+performCheckInFlow().catch(error => {
     console.error('Error during Check-in flow:')
     if (error.message) {
         console.error(error.message);
