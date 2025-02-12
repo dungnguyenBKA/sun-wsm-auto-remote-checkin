@@ -8,6 +8,10 @@ const BASE_URL = 'https://wsm.sun-asterisk.vn';
 const email = process.env.EMAIL
 const password = process.env.PASSWORD
 
+console.log({
+    email
+})
+
 function addCookies(current, addMore) {
     if (!addMore) return current;
 
