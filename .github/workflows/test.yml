@@ -1,0 +1,25 @@
+name: Delayed Test Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # Cài đặt dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Chạy dự án
+      - name: Run project
+        run: npm run start
