@@ -8,6 +8,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check current time
+        run: date -u
+
       - name: Checkout code
         uses: actions/checkout@v3
 
