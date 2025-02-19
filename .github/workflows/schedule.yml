@@ -3,8 +3,8 @@ name: Scheduled Node.js Run
 on:
   schedule:
     # Lên lịch chạy lúc 8:00 và 17:00 (giờ UTC)
-    - cron: '0 1 * * *'
-    - cron: '0 10 * * *'
+    - cron: '0 1 * * 1-5'
+    - cron: '30 10 * * 1-5'
 
 jobs:
   run-nodejs:
@@ -20,6 +20,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20' # Thay bằng phiên bản Node.js của bạn
+          
+      - name: create env file
+        run: |
+          touch .env
+          echo EMAIL=${{ secrets.EMAIL }} >> .env
+          echo PASSWORD=${{ secrets.PASSWORD }} >> .env
 
       # Cài đặt dependencies
       - name: Install dependencies
