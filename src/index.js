@@ -8,10 +8,6 @@ const BASE_URL = 'https://wsm.sun-asterisk.vn';
 const email = process.env.EMAIL
 const password = process.env.PASSWORD
 
-console.log({
-    email
-})
-
 function addCookies(current, addMore) {
     if (!addMore) return current;
 
@@ -117,7 +113,6 @@ async function performCheckInFlow() {
     console.log('Step 5: Performing remote Check-in & checkout...');
 
     const step5Data = qs.stringify({
-        '_method': 'patch',
         'authenticity_token': csrfToken2,
     });
     const cookie = cookies.join(';');
@@ -135,25 +130,28 @@ async function performCheckInFlow() {
             }
         }
     ).catch((error) => {
-        throw new Error(`Check-in failed ${error.message}`);
+        throw new Error(`Check-in failed ${error}`);
     });
 
     if (response.status === 200 && response.data) {
-        console.log('Check-in result:', response.data);
+        console.log('Check-in result:', getTimeUpdate(response.data));
     } else {
         throw new Error('Check-in failed');
     }
 
+    const step6Data = qs.stringify({
+        '_method': 'patch',
+        'authenticity_token': csrfToken2,
+    });
+
     response = await instance.post(
         `/vi/dashboard/checkout_remotes`,
-        step5Data,
+        step6Data,
         {
             headers: {
                 'accept': '*/*;q=0.5, text/javascript, application/javascript, application/ecmascript, application/x-ecmascript',
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'cookie': cookie,
-                'x-csrf-token': csrfToken2,
-                'x-requested-with': 'XMLHttpRequest'
             }
         }
     ).catch((error) => {
@@ -161,10 +159,15 @@ async function performCheckInFlow() {
     });
 
     if (response.status === 200 && response.data) {
-        console.log('Check-out result:', response.data);
+        console.log('Check-out result:', getTimeUpdate(response.data));
     } else {
         throw new Error('Check-out failed');
     }
+}
+
+function getTimeUpdate(result) {
+    const match = result.match(/\.time-update-label'\)\.html\('Cập nhật lúc:\s+([\d:]+\s+\d{2}\/\d{2}\/\d{4})/);
+    return match ? match[1] : null;
 }
 
 // Execute the Check-in flow
